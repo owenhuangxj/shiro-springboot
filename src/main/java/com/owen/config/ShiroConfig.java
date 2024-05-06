@@ -1,14 +1,12 @@
 package com.owen.config;
 
 import com.owen.filter.RolesOrAuthorizationFilter;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,16 +42,28 @@ public class ShiroConfig {
 		return filterChainDefinition;
 	}
 
+	/**
+	 * 参照shiro-spring-boot-web-starter包中的spring.factories文件中的
+	 * org.apache.shiro.spring.config.web.autoconfigure.ShiroWebFilterConfiguration的
+	 * 父类AbstractShiroWebFilterConfiguration对ShiroFilterFactoryBean的处理
+	 * 注意：有自定义Filter时需要向Shiro提供ShiroFilterFactoryBean
+	 *
+	 * @param securityManager            SecurityManager：securityManager方法提供的DefaultWebSecurityManager
+	 * @param shiroFilterChainDefinition ShiroFilterChainDefinition：shiroFilterChainDefinition
+	 *                                   方法提供的DefaultShiroFilterChainDefinition
+	 * @return ShiroFilterFactoryBean
+	 */
 	@Bean
-	protected ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager, ShiroFilterChainDefinition shiroFilterChainDefinition) {
+	protected ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager,
+															ShiroFilterChainDefinition shiroFilterChainDefinition) {
 		ShiroFilterFactoryBean filterFactoryBean = new ShiroFilterFactoryBean();
 		filterFactoryBean.setLoginUrl(loginUrl);
 		filterFactoryBean.setSuccessUrl(successUrl);
 		filterFactoryBean.setUnauthorizedUrl(unauthorizedUrl);
 		filterFactoryBean.setSecurityManager(securityManager);
 
-		// 此处是Shiro注册自定义过滤器，注意：一定要new，如果让Spring管理这个过滤器会造成SecurityUtils.getSubject()的情况
-		filterFactoryBean.getFilters().put("rolesOr",new RolesOrAuthorizationFilter());
+		// 此处是Shiro注册自定义过滤器，注意：一定要new，如果让Spring管理这个过滤器会造成SecurityUtils.getSubject()获取到null的情况
+		filterFactoryBean.getFilters().put("rolesOr", new RolesOrAuthorizationFilter());
 		filterFactoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition.getFilterChainMap());
 		return filterFactoryBean;
 	}
