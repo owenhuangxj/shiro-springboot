@@ -30,7 +30,7 @@ public class ShiroConfig {
 
 
 	/**
-	 * Shiro默认的SessionDAO为MemorySessionDAO
+	 * Shiro默认的SessionDAO为MemorySessionDAO,自定义RedisSessionDao使用@Primary注解，否则此处多个SessionDAO实例会报错
 	 */
 	@Bean
 	protected SessionManager sessionManager(SessionDAO sessionDao) {

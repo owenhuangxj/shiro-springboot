@@ -14,3 +14,7 @@ spring:
     username: root
 #    password: root
     password: Owen@2022
+  redis:
+    host: localhost
+    password: xxlw
+    port: 6379
