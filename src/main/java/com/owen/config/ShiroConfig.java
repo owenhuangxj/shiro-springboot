@@ -3,10 +3,13 @@ package com.owen.config;
 import com.owen.filter.RolesOrAuthorizationFilter;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.session.mgt.SessionManager;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +28,22 @@ public class ShiroConfig {
 	@Value("#{ @environment['shiro.unauthorizedUrl'] ?: null }")
 	protected String unauthorizedUrl;
 
+
+	/**
+	 * Shiro默认的SessionDAO为MemorySessionDAO
+	 */
 	@Bean
-	public DefaultWebSecurityManager securityManager(Realm realm) {
-		return new DefaultWebSecurityManager(realm);
+	protected SessionManager sessionManager(SessionDAO sessionDao) {
+		DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+		sessionManager.setSessionDAO(sessionDao);
+		return sessionManager;
+	}
+
+	@Bean
+	public DefaultWebSecurityManager securityManager(Realm realm, SessionManager sessionManager) {
+		DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(realm);
+		securityManager.setSessionManager(sessionManager);
+		return securityManager;
 	}
 
 	@Bean
