@@ -46,7 +46,11 @@ public class RedisSessionDao extends AbstractSessionDAO {
         if (sessionId == null) {
             return null;
         }
-        return (Session) redisTemplate.opsForValue().get(SESSION_PREFIX + sessionId);
+        Session session = (Session) redisTemplate.opsForValue().get(SESSION_PREFIX + sessionId);
+        if (session != null) {
+            redisTemplate.opsForValue().set(SESSION_PREFIX + sessionId, session, 1, TimeUnit.HOURS);
+        }
+        return session;
     }
 
     @Override
