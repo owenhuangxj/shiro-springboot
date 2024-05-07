@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * RedisCache避免分布式系统出现请求会要求频繁登陆的场景：登陆信息默认是保存到JVM中的
  * TODO:目前只是实现功能,Redis操作考虑其他Redis API减少循环IO操作
  */
 @Slf4j
