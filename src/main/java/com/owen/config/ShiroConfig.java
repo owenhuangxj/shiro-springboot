@@ -2,6 +2,7 @@ package com.owen.config;
 
 import com.owen.cache.RedisCacheManager;
 import com.owen.filter.RolesOrAuthorizationFilter;
+import com.owen.session.RedisDefaultWebSessionManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.mgt.SessionManager;
@@ -35,7 +36,9 @@ public class ShiroConfig {
 	 */
 	@Bean
 	protected SessionManager sessionManager(SessionDAO sessionDao) {
-		DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+		// DefaultWebSessionManager一次请求会多次请求Redis，RedisDefaultWebSessionManager重写retrieveSession实现多次请求只会请求redis一次
+		// DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+		DefaultWebSessionManager sessionManager = new RedisDefaultWebSessionManager();
 		sessionManager.setSessionDAO(sessionDao);
 		return sessionManager;
 	}

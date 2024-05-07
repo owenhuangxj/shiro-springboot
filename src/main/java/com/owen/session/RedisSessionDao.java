@@ -42,10 +42,10 @@ public class RedisSessionDao extends AbstractSessionDAO {
 
     @Override
     protected Session doReadSession(Serializable sessionId) {
-        log.info("Method doReadSession>>>");
         if (sessionId == null) {
             return null;
         }
+        log.info("Read session from redis>>>");
         Session session = (Session) redisTemplate.opsForValue().get(SESSION_PREFIX + sessionId);
         if (session != null) {
             redisTemplate.opsForValue().set(SESSION_PREFIX + sessionId, session, 1, TimeUnit.HOURS);
@@ -55,26 +55,26 @@ public class RedisSessionDao extends AbstractSessionDAO {
 
     @Override
     public void update(Session session) throws UnknownSessionException {
-        log.info("Method update>>>");
         if (session == null) {
             return;
         }
+        log.info("Update session in redis>>>");
         String sessionId = SESSION_PREFIX + session.getId();
         redisTemplate.opsForValue().set(sessionId, session, 1, TimeUnit.HOURS);
     }
 
     @Override
     public void delete(Session session) {
-        log.info("Method delete>>>");
         if (session == null) {
             return;
         }
+        log.info("Delete session in redis>>>");
         redisTemplate.delete(SESSION_PREFIX + session.getId());
     }
 
     @Override
     public Collection<Session> getActiveSessions() {
-        log.info("Method getActiveSessions>>>");
+        log.info("Get active sessions from redis>>>");
         Set keys = redisTemplate.keys(SESSION_PREFIX + "*");
         Set<Session> sessions = new HashSet<>();
         for (Object key : keys) {
