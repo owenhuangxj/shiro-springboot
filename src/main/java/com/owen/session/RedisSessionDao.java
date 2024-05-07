@@ -36,7 +36,6 @@ public class RedisSessionDao extends AbstractSessionDAO {
 
         // 将Session和sessionId绑定到一起（可以基于Session拿到sessionId）
         assignSessionId(session,sessionId);
-
         redisTemplate.opsForValue().set(sessionId, session, 1, TimeUnit.HOURS);
         return sessionId;
     }
@@ -44,7 +43,6 @@ public class RedisSessionDao extends AbstractSessionDAO {
     @Override
     protected Session doReadSession(Serializable sessionId) {
         log.info("Method doReadSession>>>");
-
         if (sessionId == null) {
             return null;
         }
@@ -54,7 +52,6 @@ public class RedisSessionDao extends AbstractSessionDAO {
     @Override
     public void update(Session session) throws UnknownSessionException {
         log.info("Method update>>>");
-
         if (session == null) {
             return;
         }
@@ -65,7 +62,6 @@ public class RedisSessionDao extends AbstractSessionDAO {
     @Override
     public void delete(Session session) {
         log.info("Method delete>>>");
-
         if (session == null) {
             return;
         }
@@ -75,7 +71,6 @@ public class RedisSessionDao extends AbstractSessionDAO {
     @Override
     public Collection<Session> getActiveSessions() {
         log.info("Method getActiveSessions>>>");
-
         Set keys = redisTemplate.keys(SESSION_PREFIX + "*");
         Set<Session> sessions = new HashSet<>();
         for (Object key : keys) {

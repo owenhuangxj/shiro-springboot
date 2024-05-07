@@ -1,5 +1,6 @@
 package com.owen.config;
 
+import com.owen.cache.RedisCacheManager;
 import com.owen.filter.RolesOrAuthorizationFilter;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
@@ -40,9 +41,11 @@ public class ShiroConfig {
 	}
 
 	@Bean
-	public DefaultWebSecurityManager securityManager(Realm realm, SessionManager sessionManager) {
+	public DefaultWebSecurityManager securityManager(Realm realm, SessionManager sessionManager,
+													 RedisCacheManager cacheManager) {
 		DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(realm);
 		securityManager.setSessionManager(sessionManager);
+		securityManager.setCacheManager(cacheManager);
 		return securityManager;
 	}
 

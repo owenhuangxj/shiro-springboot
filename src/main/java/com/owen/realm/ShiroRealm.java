@@ -7,6 +7,7 @@ import com.owen.entity.User;
 import com.owen.service.PermissionService;
 import com.owen.service.RoleService;
 import com.owen.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -26,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 @Component
 @Primary
+@Slf4j
 public class ShiroRealm extends AuthorizingRealm {
 //    {
 //        HashedCredentialsMatcher matcher = new HashedCredentialsMatcher();
@@ -74,6 +76,7 @@ public class ShiroRealm extends AuthorizingRealm {
      * @return AuthorizationInfo：表示仅在授权(访问控制)检查期间使用的单个Subject存储的授权数据(角色、权限等)。
      */
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        log.info("Retrieve authorization info from datasource!!!");
         User user = (User) principals.getPrimaryPrincipal();
         Set<Role> roles = roleService.findRolesByUserId(user.getId());
         if (CollectionUtils.isEmpty(roles)) {
