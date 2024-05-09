@@ -46,7 +46,8 @@ public class ShiroRealm extends AuthorizingRealm {
     private PermissionService permissionService;
 
     /**
-     * 认证方法
+     * 认证方法,方法中只需要通过username而不是通过username和password获取用户信息是因为AuthenticatingRealm#assertCredentialsMatch()
+     * 方法在做密码的比较
      *
      * @param token 认证token,是用户在身份验证尝试期间提交的帐户主体和支持凭据的整合。
      * @return AuthenticationInfo:表示Subject(即用户)存储的仅与身份验证/登录过程相关的帐户信息。

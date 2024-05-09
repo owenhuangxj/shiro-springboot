@@ -15,11 +15,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * com.owen.config.ShiroConfig#sessionManager中注入了此类实例
+ */
 @Slf4j
 @Primary
 @Component
 public class RedisSessionDao extends AbstractSessionDAO {
-
     private final static String SESSION_PREFIX = "ShiroSession:";
 
     @Resource
@@ -31,6 +33,7 @@ public class RedisSessionDao extends AbstractSessionDAO {
             return null;
         }
         log.info("Method doCreate>>>");
+
         // 基于Session生成一个sessionId
         String sessionId = SESSION_PREFIX + generateSessionId(session);
 

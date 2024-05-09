@@ -3,6 +3,7 @@ package com.owen.config;
 import com.owen.cache.RedisCacheManager;
 import com.owen.filter.RolesOrAuthorizationFilter;
 import com.owen.session.RedisDefaultWebSessionManager;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.mgt.SessionManager;
@@ -21,13 +22,13 @@ import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
-	@Value("#{ @environment['shiro.loginUrl'] ?: '/login.jsp' }")
+	@Value("#{@environment['shiro.loginUrl'] ?: '/login.jsp'}")
 	protected String loginUrl;
 
-	@Value("#{ @environment['shiro.successUrl'] ?: '/' }")
+	@Value("#{@environment['shiro.successUrl'] ?: '/'}")
 	protected String successUrl;
 
-	@Value("#{ @environment['shiro.unauthorizedUrl'] ?: null }")
+	@Value("#{@environment['shiro.unauthorizedUrl'] ?: null}")
 	protected String unauthorizedUrl;
 
 
@@ -43,17 +44,39 @@ public class ShiroConfig {
 		return sessionManager;
 	}
 
+	/**
+	 * The SecurityManager is the heart of Shiro’s architecture and acts as a sort of 'umbrella’ object
+	 * that coordinates its internal security components that together form an object graph.
+	 * However, once the SecurityManager and its internal object graph is configured for an application,
+	 * it is usually left alone and application developers spend almost all of their time with the Subject API.
+	 * SecurityManager(此方法提供的其WEB实现给Springboot框架)是Shiro框架的核心，其管理Shiro所有组件的
+	 * 交互工作(参照Shiro架构图src/main/resources/static/Shiro Detailed Architecture.png)，包括如图所示组件：
+	 * Subject、Authenticator、Authorizer、SessionManager、CacheManager、Cryptography、Realms。所以其拥有如下方法可以设置
+	 * 相应的对象setAuthenticator、setAuthorizer、setCacheManager、setRealm、setSessionManager
+	 * 注意：方法入参参数的类型声明都是使用的顶层接口是为了提高代码可维护性，如果系统万一要改变对应实现只需要提供最新的实现并用注解
+	 * <code>@Primary</code>进行标明即可,而不需要再修改这里
+	 *
+	 * @param realm          Realm的具体实现类对象，本工程是ShiroRealm(里面提供具体的认证数据源数据的获取和提供用户相应的权限信息)
+	 * @param sessionManager SessionManager的具体实现类对象，本工程是Redis的相应实现类RedisDefaultWebSessionManager
+	 * @param cacheManager   CacheManager的具体实现类对象，本工程是Redis的相应实现类RedisCacheManager
+	 * @return SecurityManager的具体实现类对象
+	 */
 	@Bean
 	public DefaultWebSecurityManager securityManager(Realm realm, SessionManager sessionManager,
-													 RedisCacheManager cacheManager) {
+													 CacheManager cacheManager) {
 		DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(realm);
 		securityManager.setSessionManager(sessionManager);
 		securityManager.setCacheManager(cacheManager);
 		return securityManager;
 	}
 
+	/**
+	 * 此方法最终向Springboot注册的ShiroFilterChainDefinition实现类Bean参照https://shiro.apache.org/spring-boot.html即可
+	 *
+	 * @return
+	 */
 	@Bean
-	public DefaultShiroFilterChainDefinition shiroFilterChainDefinition() {
+	public ShiroFilterChainDefinition shiroFilterChainDefinition() {
 		Map<String, String> pathDefinitions = new LinkedHashMap<>();
 		pathDefinitions.put("/login.html", "anon");
 		pathDefinitions.put("/user/**", "anon");
@@ -65,7 +88,7 @@ public class ShiroConfig {
 	}
 
 	/**
-	 * 参照shiro-spring-boot-web-starter包中的spring.factories文件中的
+	 * 本方法向Springboot提供的ShiroFilterFactoryBean类型Bean参照shiro-spring-boot-web-starter包中的spring.factories文件中的
 	 * org.apache.shiro.spring.config.web.autoconfigure.ShiroWebFilterConfiguration的
 	 * 父类AbstractShiroWebFilterConfiguration对ShiroFilterFactoryBean的处理
 	 * 注意：有自定义Filter时需要向Shiro提供ShiroFilterFactoryBean
