@@ -1,6 +1,5 @@
 package com.owen.config;
 
-import com.owen.cache.RedisCacheManager;
 import com.owen.filter.RolesOrAuthorizationFilter;
 import com.owen.session.RedisDefaultWebSessionManager;
 import org.apache.shiro.cache.CacheManager;

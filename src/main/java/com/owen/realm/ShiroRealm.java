@@ -70,14 +70,28 @@ public class ShiroRealm extends AuthorizingRealm {
     }
 
     /**
-     * 用户授权
+     * 用户授权:此方法应该通过principals对象中保存的User数据最终获取到角色和权限数据然后封装成SimpleAuthorizationInfo返回
+     * 方法返回后会在父类方法AuthorizingRealm#getAuthorizationInfo(PrincipalCollection)中进行缓存；
+     * 而缓存逻辑是这样的：首先获取Cache(Cache是通过AuthorizingRealm#getAuthorizationCacheLazy()获取的，具体逻辑在
+     * AuthorizingRealm#getAuthorizationCacheLazy()中，具体是先获取CacheManager，然后通过CacheManager.getCache(cacheName)
+     * 获取Cache，而cacheName是在工程启动时或者准确得说是在创建Realm(本工程是ShiroRealm)时通过调用Realm的无参构造构造的，
+     * cacheName构造具体步骤ShiroRealm无参构造->AuthorizingRealm无参构造->AuthorizingRealm(CacheManager CredentialsMatcher)
+     * ->this.authorizationCacheName = getClass().getName() + DEFAULT_AUTHORIZATION_CACHE_SUFFIX;此处生成的cacheName，从此
+     * 行代码来看实际Cache是和Realm的全限定名绑定到一起的
      *
-     * @param principals 与相应Subject相关联的所有主体的集合。
+     * )
+     *
+     * @param principals 与相应Subject相关联的所有主体的集合，此方法的AuthorizationInfo类型返回对象是通过此对象保存的用户信息
+     *                   关联的角色和权限数据组成
      *                   主体只是标识属性的安全术语，例如用户名或用户id或社会保险号或任何其他内容都可以被视为Subject的“标识”属性。
      * @return AuthorizationInfo：表示仅在授权(访问控制)检查期间使用的单个Subject存储的授权数据(角色、权限等)。
      */
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         log.info("Retrieve authorization info from datasource!!!");
+        // SimpleAuthenticationInfo(java.lang.Object, java.lang.Object, java.lang.String)构造方法保存，
+        // 认证<code>this.doGetAuthenticationInfo</code>方法内部逻辑：用户通过认证后就应该将用户信息存入Shiro的
+        // SimpleAuthenticationInfo对象中，而SimpleAuthenticationInfo对象中principals属性是PrincipalCollection类型(即此方法
+        // 的入参)，该类型是iterator的子类，本工程保存的是User对象，所以此方法获取时强转为User
         User user = (User) principals.getPrimaryPrincipal();
         Set<Role> roles = roleService.findRolesByUserId(user.getId());
         if (CollectionUtils.isEmpty(roles)) {
