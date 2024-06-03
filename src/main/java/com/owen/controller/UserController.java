@@ -26,7 +26,8 @@ public class UserController {
     public String login(String username, String password) {
         Subject subject = SecurityUtils.getSubject();
         try {
-            subject.login(new UsernamePasswordToken(username, password));
+            UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+            subject.login(token);
         } catch (UnknownAccountException exception) {
             return "Username wrong!!!";
         } catch (IncorrectCredentialsException exception) {

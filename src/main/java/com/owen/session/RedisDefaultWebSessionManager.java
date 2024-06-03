@@ -6,16 +6,14 @@ import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.SessionKey;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionKey;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletRequest;
 
 /**
  * 装饰器模式重写DefaultWebSessionManager实现retrieveSession方法，
- * 实现每次请求从ServletRequest中查询Session信息避免一次WEB请求都多次从RedisSessionDao中请求Redis来获取Session
+ * 实现每次请求从ServletRequest中查询Session信息避免一次WEB请求多次从RedisSessionDao中请求Redis来获取Session
  */
 @Slf4j
-@Component
 public class RedisDefaultWebSessionManager extends DefaultWebSessionManager {
     @Override
     protected Session retrieveSession(SessionKey sessionKey) throws UnknownSessionException {

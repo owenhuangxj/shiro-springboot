@@ -7,7 +7,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>shiro-springboot</name>
     <packaging>jar</packaging>
-    <description>Shiro project for Spring Boot</description>
+    <description>Shiro project for Spring boot</description>
 
     <parent>
         <artifactId>spring-boot-starter-parent</artifactId>

@@ -71,8 +71,6 @@ public class ShiroConfig {
 
 	/**
 	 * 此方法最终向Springboot注册的ShiroFilterChainDefinition实现类Bean参照https://shiro.apache.org/spring-boot.html即可
-	 *
-	 * @return
 	 */
 	@Bean
 	public ShiroFilterChainDefinition shiroFilterChainDefinition() {
